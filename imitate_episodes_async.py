@@ -432,11 +432,11 @@ def eval_bc(config, ckpt_name, save_episode=True):
                         action_vars =np.std(actions_for_curr_step_nogripper, axis=0)
                         action_var = np.linalg.norm(action_vars)
 
-                        if action_var < var_threshold:
+                        if skip_flag and action_var < var_threshold:
                             print('skip', t)
                             t += step_num
                         else:
-                            t += step_num -1
+                            t += 1
                         # print('qpos_numpy', qpos_numpy[7], 'action' , action[7], 'action_prev' , action_prev[7], 'des_prev', des_prev[7], 'target_qpos', target_qpos[7])
 
                         action_dev_prev = target_qpos - action_prev
@@ -448,6 +448,7 @@ def eval_bc(config, ckpt_name, save_episode=True):
                     raw_action = raw_action.squeeze(0).cpu().numpy()
                     action = post_process(raw_action)
                     target_qpos = action
+                    t += 1
 
                 ### Step the environment
                 ts = env.step(target_qpos)
